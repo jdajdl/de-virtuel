@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Dé virtuel</title>
+  <meta name="description" content="Lancez un, deux ou trois dés — au toucher ou en secouant le téléphone.">
+  <meta name="theme-color" content="#14213D">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Dé virtuel">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <h1>Dé virtuel</h1>
+
+    <section id="dice" aria-live="polite" aria-label="Dés"></section>
+
+    <p id="total">Touchez le dé ou secouez le téléphone</p>
+    <p id="history"></p>
+
+    <div id="counts" role="group" aria-label="Nombre de dés">
+      <button data-n="1" class="sel">1 dé</button>
+      <button data-n="2">2 dés</button>
+      <button data-n="3">3 dés</button>
+    </div>
+
+    <button id="roll">LANCER</button>
+    <button id="install" hidden>Installer l'application</button>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
