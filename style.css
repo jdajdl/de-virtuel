@@ -76,3 +76,6 @@ button {
 #install { margin-top: 10px; }
 button:active { filter: brightness(.9); }
 button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+/* Dés 3D : le canvas occupe toute la zone */
+#dice.d3 { display: block; position: relative; }

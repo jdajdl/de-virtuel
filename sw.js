@@ -1,11 +1,12 @@
 "use strict";
 // Incrémenter VERSION à chaque modification des fichiers pour renouveler le cache.
-const VERSION = "de-v2";
+const VERSION = "de-v3";
 const FILES = [
   "./",
   "index.html",
   "style.css",
   "app.js",
+  "dice3d.js",
   "manifest.webmanifest",
   "icons/icon-192.png",
   "icons/icon-512.png",

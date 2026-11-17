@@ -16,6 +16,7 @@ const SHAKE_PROMPT = "Touchez l'écran une fois pour activer la secousse";
 let count = 1;
 let rolling = false;
 const history = [];
+let r3d = null; // moteur 3D (dice3d.js) ; null = repli sur les dés 2D
 
 // Tirage uniforme 1..6 (rejet pour éviter le biais du modulo).
 function rand6() {
@@ -38,6 +39,7 @@ function setFace(d, v) {
 }
 
 function build() {
+  if (r3d) { r3d.setCount(count); return; }
   diceEl.replaceChildren();
   diceEl.style.setProperty("--k", count);
   for (let i = 0; i < count; i++) {
@@ -53,11 +55,29 @@ function vibrate() {
   if (navigator.vibrate) navigator.vibrate(40);
 }
 
+function finish(finals) {
+  const total = finals.reduce((a, b) => a + b, 0);
+  totalEl.textContent = finals.length === 1
+    ? `Résultat : ${total}`
+    : `Total : ${total}  (${finals.join(" + ")})`;
+  history.unshift(total);
+  history.length = Math.min(history.length, MAX_HISTORY);
+  historyEl.textContent = "Derniers lancers : " + history.join(" · ");
+  rolling = false;
+}
+
 function roll() {
   if (rolling) return;
   rolling = true;
   vibrate();
   totalEl.textContent = "…";
+
+  if (r3d) {
+    const finals = Array.from({ length: count }, rand6);
+    const reduce3d = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    r3d.roll(finals, reduce3d).then(() => finish(finals), () => finish(finals));
+    return;
+  }
 
   const dice = [...diceEl.children];
   const finals = dice.map(rand6);
@@ -80,14 +100,7 @@ function roll() {
   setTimeout(() => {
     clearInterval(ticker);
     dice.forEach((d, i) => setFace(d, finals[i]));
-    const total = finals.reduce((a, b) => a + b, 0);
-    totalEl.textContent = finals.length === 1
-      ? `Résultat : ${total}`
-      : `Total : ${total}  (${finals.join(" + ")})`;
-    history.unshift(total);
-    history.length = Math.min(history.length, MAX_HISTORY);
-    historyEl.textContent = "Derniers lancers : " + history.join(" · ");
-    rolling = false;
+    finish(finals);
   }, reduce ? 200 : ROLL_MS);
 }
 
@@ -170,4 +183,12 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 }
 
+// Dés 3D (WebGL) ; si indisponible, on garde les dés 2D.
+try {
+  const m = await import("./dice3d.js");
+  r3d = m.create(diceEl);
+  diceEl.classList.add("d3");
+} catch (_) {
+  r3d = null;
+}
 build();
