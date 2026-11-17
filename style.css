@@ -110,3 +110,8 @@ button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
   #panel { grid-column: 2; grid-row: 2; justify-content: center; }
   #total { margin-bottom: 2px; }
 }
+
+/* Écran court : on retire le bouton LANCER (toucher le dé ou secouer suffit) */
+@media (max-height: 700px) {
+  #roll { display: none; }
+}
