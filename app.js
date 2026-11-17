@@ -12,6 +12,7 @@ const countBtns = [...document.querySelectorAll("#counts button")];
 const installBtn = document.getElementById("install");
 
 const HINT = "Touchez le dé ou secouez le téléphone";
+const SHAKE_PROMPT = "Touchez l'écran une fois pour activer la secousse";
 let count = 1;
 let rolling = false;
 const history = [];
@@ -91,7 +92,7 @@ function roll() {
 }
 
 diceEl.addEventListener("click", roll);
-rollBtn.addEventListener("click", () => { enableShake(); roll(); });
+rollBtn.addEventListener("click", roll);
 
 countBtns.forEach(b => b.addEventListener("click", () => {
   if (rolling) return;
@@ -105,12 +106,20 @@ countBtns.forEach(b => b.addEventListener("click", () => {
 let shakeOn = false;
 let lastShake = 0;
 
+const needsPermission =
+  "DeviceMotionEvent" in window && typeof DeviceMotionEvent.requestPermission === "function";
+let lastMag = 0;
+
 function onMotion(e) {
-  const a = e.accelerationIncludingGravity;
+  // Avec gravité si disponible, sinon accélération seule (capteurs sans gravité).
+  const a = e.accelerationIncludingGravity || e.acceleration;
   if (!a) return;
-  const g = Math.hypot(a.x || 0, a.y || 0, a.z || 0) / 9.81;
+  const mag = Math.hypot(a.x || 0, a.y || 0, a.z || 0);
+  // Variation brusque de l'accélération (m/s²) : plus fiable qu'un seuil absolu.
+  const jerk = Math.abs(mag - lastMag);
+  lastMag = mag;
   const now = Date.now();
-  if (g > 2.5 && now - lastShake > 1000) {
+  if ((jerk > 12 || mag > 20) && now - lastShake > 1000) {
     lastShake = now;
     roll();
   }
@@ -120,19 +129,26 @@ async function enableShake() {
   if (shakeOn || !("DeviceMotionEvent" in window)) return;
   try {
     // iOS exige une autorisation explicite, déclenchée par un geste de l'utilisateur.
-    if (typeof DeviceMotionEvent.requestPermission === "function") {
+    if (needsPermission) {
       const r = await DeviceMotionEvent.requestPermission();
       if (r !== "granted") return;
     }
     window.addEventListener("devicemotion", onMotion);
     shakeOn = true;
+    if (totalEl.textContent === SHAKE_PROMPT) totalEl.textContent = HINT;
   } catch (_) { /* capteur indisponible : le toucher reste possible */ }
 }
-// Sur Android/Chrome, aucune autorisation n'est nécessaire.
-if ("DeviceMotionEvent" in window && typeof DeviceMotionEvent.requestPermission !== "function") {
-  enableShake();
+
+if ("DeviceMotionEvent" in window) {
+  if (needsPermission) {
+    // iPhone : la secousse ne marche qu'après un premier toucher (autorisation).
+    totalEl.textContent = SHAKE_PROMPT;
+    document.addEventListener("click", enableShake);
+  } else {
+    // Android : aucune autorisation nécessaire.
+    enableShake();
+  }
 }
-diceEl.addEventListener("click", enableShake);
 
 // --- Installation (PWA) ---
 let deferredPrompt = null;
