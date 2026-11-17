@@ -1,6 +1,6 @@
 "use strict";
 // Incrémenter VERSION à chaque modification des fichiers pour renouveler le cache.
-const VERSION = "de-v3";
+const VERSION = "de-v4";
 const FILES = [
   "./",
   "index.html",

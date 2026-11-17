@@ -19,17 +19,19 @@
 
     <section id="dice" aria-live="polite" aria-label="Dés"></section>
 
-    <p id="total">Touchez le dé ou secouez le téléphone</p>
-    <p id="history"></p>
+    <div id="panel">
+      <p id="total">Touchez le dé ou secouez le téléphone</p>
+      <p id="history"></p>
 
-    <div id="counts" role="group" aria-label="Nombre de dés">
-      <button data-n="1" class="sel">1 dé</button>
-      <button data-n="2">2 dés</button>
-      <button data-n="3">3 dés</button>
+      <div id="counts" role="group" aria-label="Nombre de dés">
+        <button data-n="1" class="sel">1 dé</button>
+        <button data-n="2">2 dés</button>
+        <button data-n="3">3 dés</button>
+      </div>
+
+      <button id="roll">LANCER</button>
+      <button id="install" hidden>Installer l'application</button>
     </div>
-
-    <button id="roll">LANCER</button>
-    <button id="install" hidden>Installer l'application</button>
   </main>
   <script type="module" src="app.js"></script>
 </body>

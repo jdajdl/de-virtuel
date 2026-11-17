@@ -5,7 +5,7 @@
   --muted: #B0BCD4;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; margin: 0; }
+html, body { height: 100%; margin: 0; overflow: hidden; }
 body {
   background: var(--bg);
   color: #fff;
@@ -32,6 +32,7 @@ h1 { margin: 0; text-align: center; font-size: 1.7rem; font-weight: 500; }
   justify-content: space-evenly;
   gap: 12px;
   min-height: 0;
+  overflow: hidden;
   cursor: pointer;
 }
 .die {
@@ -79,3 +80,33 @@ button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 
 /* Dés 3D : le canvas occupe toute la zone */
 #dice.d3 { display: block; position: relative; }
+
+#panel { display: flex; flex-direction: column; flex: none; }
+
+/* Petits écrans en hauteur : on compacte pour tout garder visible */
+@media (max-height: 700px) {
+  main { padding-top: calc(10px + env(safe-area-inset-top)); padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
+  h1 { font-size: 1.3rem; }
+  #total { font-size: 1.2rem; min-height: 1.6em; }
+  #history { margin: 2px 0 8px; min-height: 1.2em; font-size: .85rem; }
+  button { height: 42px; }
+  #roll { height: 52px; margin-top: 8px; font-size: 1.1rem; }
+  #install { margin-top: 6px; }
+}
+
+/* Paysage : dés à gauche, commandes à droite */
+@media (orientation: landscape) and (max-height: 600px) {
+  main {
+    max-width: none;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    grid-template-rows: auto 1fr;
+    column-gap: 24px;
+    padding-top: calc(8px + env(safe-area-inset-top));
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  }
+  h1 { grid-column: 1 / -1; font-size: 1.2rem; }
+  #dice { grid-column: 1; grid-row: 2; }
+  #panel { grid-column: 2; grid-row: 2; justify-content: center; }
+  #total { margin-bottom: 2px; }
+}
